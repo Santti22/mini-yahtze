@@ -6,12 +6,11 @@ export default StyleSheet.create({
     backgroundColor: '#fff'
   },
   header: {
-    marginTop: 30,
     backgroundColor: 'skyblue',
     flexDirection: 'row'
   },
   footer: {
-    marginTop: 20,
+    marginTop: 80,
     backgroundColor: 'skyblue',
     flexDirection: 'row'
   },
@@ -62,5 +61,12 @@ export default StyleSheet.create({
   buttonText: {
     color:"#2B2B52",
     fontSize: 20
+  },
+  gridTop: {
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  gridBottom: {
+    marginBottom: 10,
   }
 });
