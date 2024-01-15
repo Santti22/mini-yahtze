@@ -6,11 +6,10 @@ import styles from '../style/style';
 
 // Array to save dice on roll
 let board = [];
-
+let countBoard = [];
 
 // Loop to print cols and rows to make code more compact
 
-let gridArray = [];
 
 const NBR_OF_THROWS = 3;
 const NBR_OF_DICES = 5;
@@ -22,40 +21,24 @@ export default function Gameboard() {
 
     const [status, setStatus] = useState('Roll dice');
     const [select, setSelect] = useState(false);
-    const [total, setTotal] = useState(0);
+    const [total, setTotal] = useState(0)
+    const [totalArray, setTotalArray] = useState([0, 0, 0, 0, 0, 0]);
+    const [gridArray, setGridArray] = useState([])
 
     const [nbrOfThrowsLeft, setNbrOfThrowsLeft] = useState(NBR_OF_THROWS)
     const [turnsLeft, setTurnsLeft] = useState(TURNS)
     const [selectedDice, setSelectedDice] = useState([false,false,false,false,false,false])
-    for (let i = 0; i < 6; i++) {
-        gridArray.push(
-            <Col>
-                <Row name={'item' + i}
-                key={"row" + i}
-                size={35}
-                color={'steelblue'}
-                style={styles.gridTop}>
-                    {total}
-                </Row>
-                <Row>
-                    <MaterialCommunityIcons
-                        name={'numeric-' + (i+1) + '-circle'}
-                        key={"row" + i}
-                        size={35}
-                        color={'steelblue'}
-                        style={styles.gridBot}>
-                    </MaterialCommunityIcons>
-                </Row>
-            </Col>
-        )
-    }
+
     function throwDices() {
+
+        countTotal();
 
         setStatus('Select dice');
 
         for (let i = 0; i < NBR_OF_DICES; i++) {
             let randomNumber = Math.floor(Math.random() * 6 + 1);
             board[i] = 'dice-' + randomNumber;
+            countBoard[i]  = randomNumber;
         }
         setNbrOfThrowsLeft(nbrOfThrowsLeft-1);
 
@@ -75,8 +58,6 @@ export default function Gameboard() {
     let row = [];
 
     function selectDice(index) {
-        // Get dice value from board-array
-        const addTotalString = board[index]
         const newSelectedDice = [...selectedDice];
         newSelectedDice[index] = !newSelectedDice[index];
         setSelectedDice(newSelectedDice);
@@ -94,7 +75,68 @@ export default function Gameboard() {
         );
     }
 
-    console.log(board)
+    // Counter runs on dice roll, extracts number from array if the dice is selected
+    function countTotal() {
+        let sum = 0;
+        for (let i = 0; i < NBR_OF_DICES; i++) {
+            if (selectedDice[i]) {
+                const amount = countBoard[i]
+                sum += amount
+
+                const arrayIndex = amount - 1;
+
+                // Add the sum to the score-array
+                setTotalArray(prevTotalArray => {
+                    const newTotalArray = [...prevTotalArray];
+                    newTotalArray[arrayIndex] += sum;
+                    return newTotalArray;
+            })
+        }
+        console.log(totalArray)
+        
+    }}
+
+    for (let i = 0; i < 6; i++) {
+        gridArray.push(
+            <Col>
+                <Row name={'item' + i}
+                key={"row" + i}
+                size={35}
+                color={'steelblue'}
+                style={styles.gridTop}>
+                    {totalArray[i]}
+                </Row>
+                <Row>
+                    <MaterialCommunityIcons
+                        name={'numeric-' + (i+1) + '-circle'}
+                        key={"row" + i}
+                        size={35}
+                        color={'steelblue'}
+                        style={styles.gridBot}>
+                    </MaterialCommunityIcons>
+                </Row>
+            </Col>
+        )
+    }
+    useEffect(() => {
+        const grid = totalArray.map((value, index) => (
+            <Col key={`col${index}`}>
+            <Row key={`rowTop${index}`} size={35} color={'steelblue'} style={styles.gridTop}>
+                {value}
+            </Row>
+            <Row key={`rowBot${index}`}>
+                <MaterialCommunityIcons
+                    name={`numeric-${index + 1}-circle`}
+                    size={35}
+                    color={'steelblue'}
+                    style={styles.gridBot}
+                />
+            </Row>
+            </Col>
+        ) )
+        setGridArray(grid)
+      }, [totalArray]);
+
     return (
         <View style={styles.gameboard}>
             <Text style={styles.item}>{row}</Text>
